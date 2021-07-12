@@ -5,6 +5,20 @@ const xml2js = require('xml2js');
 const shared = require('./shared');
 const settings = require('./settings');
 const translator = require('./translator');
+function collectAuthors(data) {
+	return data.rss.channel[0].author.map(item => ({
+		id: item.author_login[0],
+		name: item.author_display_name[0]
+	}));
+}
+
+function getAuthorName(authors, id) {
+	return authors.find(item => item.id == id).name;
+}
+
+function getPostAuthor(post) {
+	return post.creator[0];
+}
 
 async function parseFilePromise(config) {
 	console.log('\nParsing...');
@@ -15,7 +29,8 @@ async function parseFilePromise(config) {
 	});
 
 	const postTypes = getPostTypes(data, config);
-	const posts = collectPosts(data, postTypes, config);
+	const authors = collectAuthors(data);
+	const posts = collectPosts(data, postTypes, config, authors);
 
 	const images = [];
 	if (config.saveAttachedImages) {
@@ -48,7 +63,14 @@ function getItemsOfType(data, type) {
 	return data.rss.channel[0].item.filter(item => item.post_type[0] === type);
 }
 
-function collectPosts(data, postTypes, config) {
+function getPostMeta(post) {
+	const postmeta = post.postmeta || [];
+	const meta = postmeta.find(({ meta_key }) => meta_key[0] === '_yoast_wpseo_metadesc' ) || {};
+	meta.meta_value = meta.meta_value || [];
+	return meta.meta_value[0];
+}
+
+function collectPosts(data, postTypes, config, authors) {
 	// this is passed into getPostContent() for the markdown conversion
 	const turndownService = translator.initTurndownService();
 
@@ -66,6 +88,8 @@ function collectPosts(data, postTypes, config) {
 					imageUrls: []
 				},
 				frontmatter: {
+					author: getAuthorName(authors, getPostAuthor(post)),
+					meta: getPostMeta(post),
 					title: getPostTitle(post),
 					date: getPostDate(post),
 					categories: getCategories(post),

@@ -1,5 +1,5 @@
 const turndown = require('turndown');
-const turndownPluginGfm = require('turndown-plugin-gfm');
+const turndownPluginGfm = require('@guyplusplus/turndown-plugin-gfm');
 
 function initTurndownService() {
 	const turndownService = new turndown({
