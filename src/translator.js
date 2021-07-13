@@ -79,6 +79,10 @@ function getPostContent(post, turndownService, config) {
 
 	content = content.replace(/\[\/code\]/gm, `</code></pre>`);
 
+	content = content.replace(/\[(javascript|typescript|css|bash|jscript|xml)\]/gm, `<pre><code class="language-$1">`);
+
+	content = content.replace(/\[\/(javascript|typescript|css|bash|jscript|xml)\]/gm, `</code></pre>`);
+
 	// use turndown to convert HTML to Markdown
 	content = turndownService.turndown(content);
 
