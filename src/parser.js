@@ -63,7 +63,7 @@ function getItemsOfType(data, type) {
 	return data.rss.channel[0].item.filter(item => item.post_type[0] === type);
 }
 
-function getPostMeta(post) {
+function getPostDescription(post) {
 	const postmeta = post.postmeta || [];
 	const meta = postmeta.find(({ meta_key }) => meta_key[0] === '_yoast_wpseo_metadesc' ) || {};
 	meta.meta_value = meta.meta_value || [];
@@ -89,7 +89,7 @@ function collectPosts(data, postTypes, config, authors) {
 				},
 				frontmatter: {
 					author: getAuthorName(authors, getPostAuthor(post)),
-					meta: getPostMeta(post),
+					description: getPostDescription(post),
 					title: getPostTitle(post),
 					date: getPostDate(post),
 					categories: getCategories(post),
