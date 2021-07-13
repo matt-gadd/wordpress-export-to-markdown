@@ -75,6 +75,10 @@ function getPostContent(post, turndownService, config) {
 	// (using turndown's blankRule() and keep() solution did not work for me)
 	content = content.replace(/(<\/iframe>)/gi, '.$1');
 
+	content = content.replace(/\[code language="(.*?)"\]/gm, `<pre><code class="language-$1">`);
+
+	content = content.replace(/\[\/code\]/gm, `</code></pre>`);
+
 	// use turndown to convert HTML to Markdown
 	content = turndownService.turndown(content);
 
